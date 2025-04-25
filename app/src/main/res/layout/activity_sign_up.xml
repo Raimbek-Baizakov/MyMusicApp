@@ -1,24 +1,52 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:layout_marginLeft="150dp"
         android:text="Sign Up"
         android:textSize="24sp"
         android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/radioPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Номер" />
+
+        <RadioButton
+            android:id="@+id/radioEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Почта" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/inputField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Введите Номер или Почту"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/buttonNextSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="400dp"
-        android:text="To SignUp2" />
+        android:layout_gravity="center"
+        android:text="To SignUp2"
+        android:layout_marginTop="32dp" />
 
-</FrameLayout>
-
+</LinearLayout>
