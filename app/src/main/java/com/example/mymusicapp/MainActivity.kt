@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Response
+//import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,9 +23,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // Проверка подключения к API
-        testApiConnection()
 
         val buttonProfile = findViewById<Button>(R.id.buttonNextProfile)
         buttonProfile.setOnClickListener {
@@ -84,67 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun testApiConnection() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Вариант 1: Проверка соединения
-                val testResponse = RetrofitClient.instance.testConnection()
 
-                // Вариант 2: Или сразу получаем пользователей
-                // val response = RetrofitClient.instance.getUsers()
-
-                withContext(Dispatchers.Main) {
-                    if (testResponse.isSuccessful) {
-                        Log.d("API_TEST", "Сервер доступен")
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Соединение с сервером установлено",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        // Дополнительно можно загрузить пользователей
-                        loadUsers()
-                    } else {
-                        showError("Ошибка сервера: ${testResponse.code()}")
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    showError("Сетевая ошибка: ${e.message}")
-                }
-            }
-        }
-    }
-
-    private fun loadUsers() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = RetrofitClient.instance.getUsers()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val users = response.body()
-                        Log.d("API_TEST", "Получено ${users?.size ?: 0} пользователей")
-                        // Здесь можно обновить UI с полученными данными
-                    } else {
-                        showError("Ошибка при загрузке пользователей")
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    showError("Ошибка загрузки: ${e.message}")
-                }
-            }
-        }
-    }
-
-    private fun showError(message: String) {
-        Log.e("API_TEST", message)
-        Toast.makeText(
-            this@MainActivity,
-            message,
-            Toast.LENGTH_LONG
-        ).show()
-    }
 
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
