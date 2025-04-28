@@ -1,0 +1,8 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Закругление углов (12dp для плавности) -->
+    <corners android:radius="250dp" />
+    <!-- Серая обводка (1dp толщиной) -->
+    <!-- Белый фон внутри -->
+    <solid android:color="#FFFFFF" />
+</shape>

@@ -33,7 +33,7 @@ class NetworkException(message: String) : Exception(message)
 class UserService {
 
     companion object {
-        private const val BASE_URL = "http://192.168.127.38:8080" // Либо вынести в конфигурацию
+        private const val BASE_URL = "http://192.168.127.213:8080" // Либо вынести в конфигурацию
     }
 
     private val client = HttpClient(Android) {

@@ -6,15 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
+import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-//import retrofit2.Response
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,26 +21,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val buttonProfile = findViewById<Button>(R.id.buttonNextProfile)
+        val buttonProfile = findViewById<ImageView>(R.id.buttonNextProfile)
         buttonProfile.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
 
-        val buttonSettings = findViewById<Button>(R.id.buttonNextSettings)
+        val buttonSettings = findViewById<ImageButton>(R.id.buttonNextSettings)
         buttonSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
 
-//        val sharedPreferences: SharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-//        val isRegistered = sharedPreferences.getBoolean("isRegistered", false)
-//
-//        if (!isRegistered) {
-//            startActivity(Intent(this, SignUpActivity::class.java))
-//            finish()
-//            return
-//        }
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 

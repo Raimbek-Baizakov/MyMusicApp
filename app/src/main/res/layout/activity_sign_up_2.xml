@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#010101">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:padding="16dp">
@@ -14,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign Up 2"
+            android:text="Verify Phone Number"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="24dp"/>
@@ -22,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Введите 4-значный код"
+            android:text="Please enter the 4 digit code"
             android:textSize="18sp"
             android:layout_marginBottom="16dp"/>
 
@@ -43,7 +44,7 @@
                 android:gravity="center"
                 android:background="@drawable/edittext_border"
                 android:importantForAccessibility="yes"
-                android:contentDescription="Code 1"/>
+                android:contentDescription="Code 1" />
 
             <EditText
                 android:id="@+id/code2"
@@ -85,14 +86,32 @@
                 android:contentDescription="Code 4"/>
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Didn’t recieve a code?"
+            android:textSize="18sp"
+            android:layout_marginLeft="-55dp"
+            android:layout_marginBottom="16dp"/>
+
         <Button
             android:id="@+id/verifyButton"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:text="Подтвердить"
+            android:backgroundTint="#353535"
+            android:text="Verify number"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="50dp"
             android:layout_marginBottom="16dp"
-            android:importantForAccessibility="yes"
-            android:contentDescription="Verify Button"/>
+            android:importantForAccessibility="yes" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="By continuing you’re indicating that you accept \n      our Terms of Use and our Privacy Policy"
+            android:textSize="14sp"
+            android:textColor="#7E7E7E"
+            android:layout_marginBottom="16dp"/>
 
         <TextView
             android:id="@+id/errorText"
@@ -105,4 +124,15 @@
             android:contentDescription="Error Text"/>
 
     </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/resendSmsButton"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="-84dp"
+        android:textColor="#7C15FF"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="90dp"/>
 </FrameLayout>

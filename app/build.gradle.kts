@@ -55,5 +55,7 @@ dependencies {
     implementation (libs.ktor.client.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.ktor.serialization.kotlinx.xml)
-
+    implementation (libs.androidx.recyclerview)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 }

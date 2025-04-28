@@ -1,52 +1,100 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#010101">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
+        android:text="Sign Up to Evently"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="85dp"/>
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="16dp">
+        android:text="Create your own unique musical world - register\n and start enjoying your favorite tracks today!"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginLeft="38dp"
+        android:layout_marginTop="200dp"/>
 
-        <RadioButton
-            android:id="@+id/radioPhone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Номер" />
 
-        <RadioButton
-            android:id="@+id/radioEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Почта" />
-    </RadioGroup>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="300dp"
+        android:layout_marginLeft="38dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxStrokeColor="@android:color/transparent"
+        app:boxBackgroundColor="@android:color/transparent"
+        android:background="@drawable/rounded_edittext_bg">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/inputField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Введите Номер или Почту"
-        android:inputType="text" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inputField"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:hint="Phone Number"
+            android:textColor="#010101"
+            android:inputType="phone" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/buttonNextSignUp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Sign up with phone"
+        android:layout_marginTop="360dp"
+        android:layout_marginLeft="38dp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#7C15FF"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="By continuing you’re indicating that you accept\n      our Terms of Use and our Privacy Policy"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="450dp"/>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="To SignUp2"
-        android:layout_marginTop="32dp" />
+        android:text="Or sign up using"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginTop="350dp"/>
 
-</LinearLayout>
+    <!-- Переключаемая кнопка -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/toggleAuthMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="450dp"
+        android:text="Use Email"
+        app:backgroundTint="#C5331E"
+        app:icon="@drawable/ic_email"
+        app:iconTint="@color/white"
+        app:cornerRadius="100dp"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="1dp"
+        android:textColor="#FFFFFF"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

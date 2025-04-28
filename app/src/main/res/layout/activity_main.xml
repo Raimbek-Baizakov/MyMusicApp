@@ -3,38 +3,65 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <!-- Упрощенный контейнер для фрагментов -->
-
-    <!-- Bottom Navigation Menu -->
+    android:layout_height="match_parent"
+    android:background="#010101">
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <Button
-            android:id="@+id/buttonNextProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginLeft="25dp"
-            android:text="To Profile" />
-
-        <Button
-            android:id="@+id/buttonNextSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="25dp"
-            android:layout_marginRight="25dp"
-            android:text="To Settings" />
-
+        android:layout_height="match_parent"
+        android:translationZ="-1dp">
     </FrameLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:padding="8dp">
 
+        <!-- Кнопка аккаунта с динамическим текстом -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onAccountClick">
+
+            <ImageView
+                android:id="@+id/buttonNextProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:elevation="4dp"
+                android:src="@drawable/ic_account"/>
+
+            <TextView
+                android:id="@+id/accountStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_background"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:paddingStart="27dp"
+                android:text="Not active"
+                android:textColor="#010101"
+                android:textSize="14sp"
+                android:layout_marginStart="-30dp"/>
+        </LinearLayout>
+
+        <!-- Кнопка настроек -->
+        <ImageButton
+            android:id="@+id/buttonNextSettings"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/ic_settings"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="onSettingsClick"/>
+    </FrameLayout>
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -42,9 +69,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:menu="@menu/bottom_navigation_menu"
+        app:backgroundTint="#000000"
+        app:itemIconTint="#FFFFFF"
+        app:itemTextColor="#FFFFFF"
         app:labelVisibilityMode="labeled"
-        android:background="?android:attr/windowBackground"/>
+        app:menu="@menu/bottom_navigation_menu" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
