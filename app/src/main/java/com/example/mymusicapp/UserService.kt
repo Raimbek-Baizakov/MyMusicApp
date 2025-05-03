@@ -5,15 +5,14 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.http.Url
 
-// Определение данных пользователя
 @Serializable
 data class ExposedMusicUser(val phone: String?, val email: String?) {
     init {
@@ -21,19 +20,20 @@ data class ExposedMusicUser(val phone: String?, val email: String?) {
     }
 }
 
-// Класс ответа
 @Serializable
-data class UserResponse(val phone: String?, val email: String?)
+data class UserResponse(
+    val id: Int,
+    val phone: String?,
+    val email: String?,
+    val role: String
+)
 
-// Исключения
 class UserAdditionException(message: String) : Exception(message)
-class UserNotFoundException(message: String) : Exception(message)
 class NetworkException(message: String) : Exception(message)
 
 class UserService {
-
     companion object {
-        private const val BASE_URL = "http://192.168.127.213:8080" // Либо вынести в конфигурацию
+        private const val BASE_URL = "http://192.168.127.175:8080"
     }
 
     private val client = HttpClient(Android) {
@@ -41,57 +41,74 @@ class UserService {
             json(Json { ignoreUnknownKeys = true })
         }
         install(Logging) {
-            level = LogLevel.ALL // Поменять на INFO для релиза
+            level = LogLevel.ALL
         }
     }
 
-    suspend fun addUser(user: ExposedMusicUser): Int {
+    suspend fun addUser(user: ExposedMusicUser): UserResponse {
         Log.i("UserService", "Начало добавления пользователя: $user")
         try {
-            val response = client.post("$BASE_URL/users") {
-                Log.i("UserService", "Отправка запроса POST на адрес: $BASE_URL/users")
+            return client.post("$BASE_URL/users") {
                 contentType(ContentType.Application.Json)
                 setBody(user)
-            }
-            val statusCode = response.status.value
-            Log.i("UserService", "Пользователь добавлен. Статус ответа: $statusCode")
-            return statusCode
+            }.body()
         } catch (e: Exception) {
             Log.e("UserService", "Ошибка при добавлении пользователя: ${e.message}", e)
             throw UserAdditionException("Ошибка при добавлении пользователя: ${e.message}")
         }
     }
 
-    suspend fun checkUser(phone: String?, email: String?): UserResponse? {
-        Log.i("UserService", "Начало проверки пользователя. phone: $phone, email: $email")
+    suspend fun loginUser(user: ExposedMusicUser): UserResponse {
         try {
-            val url = buildString {
-                append("$BASE_URL/users?")
-                if (!phone.isNullOrEmpty()) append("phone=$phone")
-                if (!email.isNullOrEmpty()) {
-                    if (!phone.isNullOrEmpty()) append("&")
-                    append("email=$email")
+            val existingUser = findUser(phone = user.phone, email = user.email)
+            return existingUser ?: run {
+                Log.i("UserService", "Пользователь не найден, создаем нового")
+                addUser(user).also {
+                    Log.i("UserService", "Пользователь создан: $it")
                 }
             }
-            Log.i("UserService", "Формируемый URL запроса: $url")
+        } catch (e: Exception) {
+            Log.e("UserService", "Ошибка при входе пользователя", e)
+            throw NetworkException("Ошибка при входе пользователя: ${e.message}")
+        }
+    }
 
-            val finalUrl = Url(url)
-            Log.i("UserService", "Отправка запроса GET на адрес: $finalUrl")
+    suspend fun findUser(phone: String? = null, email: String? = null): UserResponse? {
+        try {
+            val url = buildString {
+                append("$BASE_URL/users/find?")
+                if (!phone.isNullOrEmpty()) append("phone=${phone.encodeURLParameter()}")
+                if (!email.isNullOrEmpty()) {
+                    if (!phone.isNullOrEmpty()) append("&")
+                    append("email=${email.encodeURLParameter()}")
+                }
+            }
 
-            val response = client.get(finalUrl)
-            Log.i("UserService", "Получен ответ от сервера. Статус: ${response.status.value}")
+            if (phone.isNullOrEmpty() && email.isNullOrEmpty()) {
+                throw IllegalArgumentException("Must provide phone or email")
+            }
 
-            if (response.status.isSuccess()) {
-                val userResponse = response.body<UserResponse>()
-                Log.i("UserService", "Пользователь найден: $userResponse")
-                return userResponse
-            } else {
-                Log.w("UserService", "Пользователь не найден. Статус ответа: ${response.status.value}")
-                throw UserNotFoundException("Пользователь не найден")
+            return client.get(url) {
+                expectSuccess = false
+            }.let { response ->
+                when (response.status) {
+                    HttpStatusCode.OK -> response.body()
+                    HttpStatusCode.NotFound -> null
+                    else -> throw NetworkException("Server error: ${response.status}")
+                }
             }
         } catch (e: Exception) {
-            Log.e("UserService", "Ошибка при запросе проверки пользователя: ${e.message}", e)
-            throw NetworkException("Ошибка при запросе: ${e.message}")
+            Log.e("UserService", "Ошибка при поиске пользователя", e)
+            throw NetworkException("Ошибка при поиске пользователя: ${e.message}")
+        }
+    }
+
+    suspend fun getAllUsers(): List<UserResponse> {
+        try {
+            return client.get("$BASE_URL/users").body()
+        } catch (e: Exception) {
+            Log.e("UserService", "Ошибка при получении списка пользователей", e)
+            throw NetworkException("Ошибка при получении пользователей: ${e.message}")
         }
     }
 }

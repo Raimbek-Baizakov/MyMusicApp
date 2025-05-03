@@ -87,25 +87,12 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
-        val user = if (isPhoneMode) {
-            ExposedMusicUser(phone = input, email = null)
-        } else {
-            ExposedMusicUser(phone = null, email = input)
-        }
-
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val statusCode = UserService().addUser(user)
-                if (statusCode == 201) {
-                    val intent = Intent(this@SignUpActivity, SignUp2Activity::class.java)
-                    intent.putExtra("authMethod", if (isPhoneMode) "phone" else "email")
-                    intent.putExtra("authValue", input)
-                    startActivity(intent)
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@SignUpActivity,
-                    "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Передача данных в SignUp2Activity
+        val intent = Intent(this, SignUp2Activity::class.java)
+        intent.putExtra("authMethod", if (isPhoneMode) "phone" else "email")
+        intent.putExtra("authValue", input)
+        startActivity(intent)
     }
+
+
 }

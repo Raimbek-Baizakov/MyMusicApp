@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -24,6 +25,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SignUp2Activity : AppCompatActivity() {
 
@@ -75,31 +79,80 @@ class SignUp2Activity : AppCompatActivity() {
 
         // Обработчик для кнопки "Подтвердить"
         verifyButton.setOnClickListener {
-            val enteredCode = code1.text.toString() + code2.text.toString() + code3.text.toString() + code4.text.toString()
+            val enteredCode = code1.text.toString() + code2.text.toString() +
+                    code3.text.toString() + code4.text.toString()
 
-            // Проверка на пустоту
             if (enteredCode.isEmpty()) {
                 errorText.text = "Пожалуйста, введите код"
                 errorText.visibility = TextView.VISIBLE
                 return@setOnClickListener
             }
 
-            // Проверка на совпадение с кодом
             if (enteredCode == generatedCode) {
-                Toast.makeText(this, "Код подтвержден!", Toast.LENGTH_SHORT).show()
+                val authMethod = intent.getStringExtra("authMethod")
+                val authValue = intent.getStringExtra("authValue")
 
-                // Сохранение статуса подтверждения
-                sharedPreferences.edit().putBoolean("isVerified", true).apply()
+                val user = if (authMethod == "phone") {
+                    ExposedMusicUser(phone = authValue, email = null)
+                } else {
+                    ExposedMusicUser(phone = null, email = authValue)
+                }
 
-                // Переход в MainActivity при правильном коде
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()  // Закрываем текущую активность
+                GlobalScope.launch(Dispatchers.Main) {
+                    try {
+                        val userService = UserService()
+                        val existingUser = userService.findUser(phone = user.phone, email = user.email)
+
+                        if (existingUser != null) {
+                            // Пользователь существует - вход
+                            sharedPreferences.edit().apply {
+                                putBoolean("isVerified", true)
+                                putInt("userId", existingUser.id)
+                                putString("userRole", existingUser.role)
+                                apply()
+                            }
+
+                            Toast.makeText(
+                                this@SignUp2Activity,
+                                "Добро пожаловать!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            // Пользователь не существует - регистрация
+                            val newUser = userService.addUser(user)
+                            sharedPreferences.edit().apply {
+                                putBoolean("isVerified", true)
+                                putInt("userId", newUser.id)
+                                putString("userRole", newUser.role)
+                                apply()
+                            }
+
+                            Toast.makeText(
+                                this@SignUp2Activity,
+                                "Регистрация прошла успешно!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        // Переход в MainActivity
+                        val intent = Intent(this@SignUp2Activity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            this@SignUp2Activity,
+                            "Ошибка: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             } else {
-                errorText.text = "Неверный код"
+                errorText.text = "Неверный код подтверждения"
                 errorText.visibility = TextView.VISIBLE
             }
         }
+
     }
     private fun setupCodeInputFields() {
         val codeFields = arrayOf(code1, code2, code3, code4)
@@ -165,6 +218,7 @@ class SignUp2Activity : AppCompatActivity() {
         resendSmsButton.text = spannable
         resendSmsButton.movementMethod = LinkMovementMethod.getInstance()
     }
+
 
     // Функция для отправки уведомления
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
