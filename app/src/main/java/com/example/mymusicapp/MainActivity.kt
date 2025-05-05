@@ -3,15 +3,12 @@ package com.example.mymusicapp
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,18 +18,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val buttonProfile = findViewById<ImageView>(R.id.buttonNextProfile)
-        buttonProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+        // Получаем SharedPreferences
+        val sharedPreferences = getSharedPreferences("MyMusicAppPrefs", MODE_PRIVATE)
+
+        // Проверяем, первый ли это запуск после установки
+        val isFirstRun = sharedPreferences.getBoolean("isFirstRun", true)
+        if (isFirstRun) {
+            // Сбрасываем isVerified в false при первом запуске
+            sharedPreferences.edit().putBoolean("isVerified", false).apply()
+            sharedPreferences.edit().putBoolean("isFirstRun", false).apply()
         }
 
-        val buttonSettings = findViewById<ImageButton>(R.id.buttonNextSettings)
-        buttonSettings.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-        }
+        val isVerified = sharedPreferences.getBoolean("isVerified", false)
 
+        if (!isVerified) {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
@@ -69,8 +73,6 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId = R.id.nav_home
         }
     }
-
-
 
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

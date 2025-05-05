@@ -77,6 +77,9 @@ class SignUp2Activity : AppCompatActivity() {
         // Отправка уведомления с кодом
         sendNotification(generatedCode)
 
+        val areNotificationsEnabled = NotificationManagerCompat.from(this).areNotificationsEnabled()
+        Toast.makeText(this, "Уведомления ${if (areNotificationsEnabled) "включены" else "выключены"}", Toast.LENGTH_SHORT).show()
+
         // Обработчик для кнопки "Подтвердить"
         verifyButton.setOnClickListener {
             val enteredCode = code1.text.toString() + code2.text.toString() +
