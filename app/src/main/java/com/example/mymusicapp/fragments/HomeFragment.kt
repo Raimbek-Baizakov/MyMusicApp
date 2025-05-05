@@ -1,151 +1,113 @@
 package com.example.mymusicapp
 
-import SongAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * Главный фрагмент приложения, отображает список треков на главном экране.
+ * Реализует базовый функционал:
+ * - Отображение списка треков
+ * - Обработка кликов
+ * - Работа с состоянием загрузки
+ */
 class HomeFragment : Fragment() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: SongAdapter // Убрали generic параметр
+    // region UI Components
+    private lateinit var recyclerView: RecyclerView  // Основной список треков
+    private lateinit var adapter: TrackAdapter      // Адаптер для RecyclerView
+    private lateinit var progressBar: ProgressBar   // Индикатор загрузки
+    private lateinit var emptyView: TextView        // Сообщение при пустом списке
+    // endregion
 
-    private val musicList = mutableListOf(
-        Song(
-            1,
-            "Song 1",
-            "Author 1",
-            "3:30",
-            "song1.png",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            2,
-            "Song 2",
-            "Author 2",
-            "4:00",
-            "song2.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            3,
-            "Song 3",
-            "Author 3",
-            "2:50",
-            "song3.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            4,
-            "Song 4",
-            "Author 4",
-            "3:10",
-            "song4.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            5,
-            "Song 5",
-            "Author 5",
-            "4:20",
-            "song5.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            6,
-            "Song 6",
-            "Author 6",
-            "3:45",
-            "song6.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            7,
-            "Song 7",
-            "Author 7",
-            "2:55",
-            "song7.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            8,
-            "Song 8",
-            "Author 8",
-            "4:05",
-            "song8.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            9,
-            "Song 9",
-            "Author 9",
-            "3:25",
-            "song9.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        ),
-        Song(
-            10,
-            "Song 10",
-            "Author 10",
-            "3:35",
-            "song10.jpg",
-            downloaded = false,
-            favorite = false,
-            playlistName = null
-        )
-    )
+    private lateinit var viewModel: TrackViewModel  // ViewModel для управления данными
 
+    /**
+     * Создание View для фрагмента
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        // Надуваем layout из fragment_home.xml
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
-        recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+    /**
+     * Инициализация UI после создания View
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        adapter = SongAdapter(
-            songList = musicList,
-            onFavoriteClick = { position ->
-                val updatedSong = musicList[position].copy(
-                    favorite = !musicList[position].favorite
-                )
-                musicList[position] = updatedSong // Обновляем элемент в списке
-                adapter.notifyItemChanged(position) // Уведомляем адаптер об изменении
-            },
-            onDownloadClick = { position ->
-                val updatedSong = musicList[position].copy(
-                    downloaded = !musicList[position].downloaded
-                )
-                musicList[position] = updatedSong // Обновляем элемент в списке
-                adapter.notifyItemChanged(position) // Уведомляем адаптер об изменении
+        // Инициализация ViewModel (используем активити как owner для сохранения состояния между фрагментами)
+        viewModel = ViewModelProvider(requireActivity())[TrackViewModel::class.java]
+
+        // Привязка UI элементов
+        recyclerView = view.findViewById(R.id.recycler_tracks)
+        progressBar = view.findViewById(R.id.progress_bar)
+        emptyView = view.findViewById(R.id.empty_view)
+
+        // Настройка RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())  // Вертикальный список
+        adapter = TrackAdapter(
+            onTrackClick = { track ->
+                // Обработка клика на трек - передаем в MainActivity
+                (requireActivity() as MainActivity).playTrack(track, "home")
             }
         )
+        recyclerView.adapter = adapter  // Установка адаптера
 
-        recyclerView.adapter = adapter
-        return view
+        // Подписка на изменения данных
+        observeViewModel()
+    }
+
+    /**
+     * При возобновлении фрагмента обновляем данные
+     */
+    override fun onResume() {
+        super.onResume()
+        // Загружаем треки с указанием источника "home"
+        viewModel.loadTracks("home")
+    }
+
+    /**
+     * Наблюдение за изменениями в ViewModel
+     */
+    private fun observeViewModel() {
+        // Наблюдение за списком треков
+        viewModel.tracks.observe(viewLifecycleOwner) { tracks ->
+            if (tracks.isEmpty()) {
+                // Показываем сообщение если список пуст
+                emptyView.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+            } else {
+                // Обновляем список если есть данные
+                emptyView.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+                adapter.updateTracks(tracks)
+            }
+        }
+
+        // Наблюдение за состоянием загрузки
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        // Наблюдение за ошибками
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                viewModel.clearError()  // Очищаем ошибку после показа
+            }
+        }
     }
 }

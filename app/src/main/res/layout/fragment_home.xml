@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Фоновое изображение (не растягивается на весь экран) -->
     <ImageView
@@ -14,8 +14,28 @@
 
     <!-- RecyclerView занимает весь экран, но имеет отступ сверху -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recycler_tracks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="100dp" />  <!-- Начинается после фонового изображения -->
+        android:clipToPadding="false"
+        android:paddingBottom="110dp"
+        tools:listitem="@layout/track_item" />
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Нет доступных треков"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:visibility="gone" />
 </FrameLayout>
